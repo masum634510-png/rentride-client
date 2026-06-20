@@ -5,7 +5,8 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import CarCard from "../../components/CarCard";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { FaSearch, FaFilter, FaSortAmountDown } from "react-icons/fa";
+import { FaSearch, FaFilter, FaSortAmountDown, FaCar } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const CAR_TYPES = ["all", "SUV", "Sedan", "Hatchback", "Luxury", "Electric", "Pickup", "Van"];
 
@@ -73,8 +74,10 @@ function ExploreContent() {
 
         {loading ? <LoadingSpinner /> : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cars.length > 0 ? cars.map((car)=>(
-              <div key={car._id}><CarCard car={car} /></div>
+            {cars.length > 0 ? cars.map((car, i)=>(
+              <motion.div key={car._id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }} viewport={{ once: true }}>
+                <CarCard car={car} />
+              </motion.div>
             )) : (
               <div className="col-span-full text-center py-20 px-8">
                 <div className="text-5xl mb-4 opacity-40">🔍</div>

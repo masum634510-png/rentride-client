@@ -68,7 +68,7 @@ export default function AddCar() {
               </div>
               <div className="form-group md:col-span-2">
                 <label className="form-label">Image URL *</label>
-                <input type="url" name="imageUrl" className="form-input" placeholder="https://i.ibb.co/your-image.jpg" value={form.imageUrl} onChange={handleChange} required />
+                <input type="text" name="imageUrl" className="form-input" placeholder="https://i.ibb.co/your-image.jpg" value={form.imageUrl} onChange={handleChange} required />
               </div>
               <div className="form-group md:col-span-2">
                 <label className="form-label">Pickup Location *</label>

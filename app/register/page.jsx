@@ -80,7 +80,7 @@ export default function Register() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="form-group">
             <label className="form-label">Full Name</label>
-            <input type="text" name="name" className="form-input" placeholder="Your full name" value={form.name} onChange={handleChange} required />
+            <input type="text" name="name" className="form-input" placeholder="Your full name" value={form.name} onChange={handleChange} required autoFocus />
           </div>
           <div className="form-group">
             <label className="form-label">Email Address</label>

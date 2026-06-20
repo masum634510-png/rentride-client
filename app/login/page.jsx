@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash, FaCar, FaGoogle } from "react-icons/fa";
@@ -11,11 +11,13 @@ import axios from "axios";
 export default function Login() {
   const { login, googleLogin } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const redirect = searchParams.get("redirect") || "/";
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -25,7 +27,7 @@ export default function Login() {
     try {
       await login(form.email, form.password);
       toast.success("Welcome back! 🚗");
-      router.push("/");
+      router.push(redirect);
     } catch (err) {
       toast.error(err.message.includes("invalid") ? "Invalid email or password!" : "Login failed. Please try again.");
     } finally {
@@ -38,7 +40,7 @@ export default function Login() {
       const result = await googleLogin();
       await axios.post(`${API_URL}/users`, { name: result.user.displayName, email: result.user.email, photoURL: result.user.photoURL });
       toast.success("Logged in with Google! 🚗");
-      router.push("/");
+      router.push(redirect);
     } catch (err) {
       toast.error("Google login failed!");
     }

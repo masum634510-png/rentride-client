@@ -8,14 +8,91 @@ import { FaCar, FaShieldAlt, FaHeadset, FaStar, FaArrowRight } from "react-icons
 import CarCard from "../components/CarCard";
 import LoadingSpinner from "../components/LoadingSpinner";
 
+const defaultCars = [
+  {
+    _id: "demo1",
+    carName: "Tesla Model S Plaid",
+    dailyRentPrice: 120,
+    carType: "Electric",
+    imageUrl: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?auto=format&fit=crop&q=80&w=800",
+    seatCapacity: 5,
+    pickupLocation: "Dhaka Airport, Terminal 1",
+    description: "Experience the ultimate electric performance. 1020 horsepower.",
+    availability: "Available",
+    bookingCount: 12,
+  },
+  {
+    _id: "demo2",
+    carName: "BMW M4 Competition",
+    dailyRentPrice: 150,
+    carType: "Luxury",
+    imageUrl: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=800",
+    seatCapacity: 4,
+    pickupLocation: "Gulshan-2, Dhaka",
+    description: "Pure driving pleasure and aggressive styling.",
+    availability: "Available",
+    bookingCount: 8,
+  },
+  {
+    _id: "demo3",
+    carName: "Ford Mustang GT Convertible",
+    dailyRentPrice: 95,
+    carType: "Convertible",
+    imageUrl: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=800",
+    seatCapacity: 4,
+    pickupLocation: "Banani, Dhaka",
+    description: "Classic American muscle with an open-top experience.",
+    availability: "Available",
+    bookingCount: 15,
+  },
+  {
+    _id: "demo4",
+    carName: "Jeep Wrangler Rubicon 4xe",
+    dailyRentPrice: 85,
+    carType: "SUV",
+    imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800",
+    seatCapacity: 5,
+    pickupLocation: "Uttara Sector 4, Dhaka",
+    description: "Go anywhere, do anything. Hybrid off-road capabilities.",
+    availability: "Available",
+    bookingCount: 5,
+  },
+  {
+    _id: "demo5",
+    carName: "Toyota Camry Hybrid 2023",
+    dailyRentPrice: 50,
+    carType: "Sedan",
+    imageUrl: "https://images.unsplash.com/photo-1621007947382-cc34a6211231?auto=format&fit=crop&q=80&w=800",
+    seatCapacity: 5,
+    pickupLocation: "Dhanmondi 27, Dhaka",
+    description: "Sleek design, quiet ride, and exceptional fuel economy.",
+    availability: "Available",
+    bookingCount: 22,
+  },
+  {
+    _id: "demo6",
+    carName: "Honda Civic Type R",
+    dailyRentPrice: 60,
+    carType: "Hatchback",
+    imageUrl: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&q=80&w=800",
+    seatCapacity: 5,
+    pickupLocation: "Mirpur 10, Dhaka",
+    description: "The ultimate hot hatch with race-bred aerodynamics.",
+    availability: "Available",
+    bookingCount: 19,
+  },
+];
+
 export default function Home() {
-  const [cars, setCars] = useState([]);
+  const [cars, setCars] = useState(defaultCars);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
     axios.get(`${API_URL}/cars`).then((res) => {
-      setCars(res.data.slice(0, 6));
+      if (res.data && res.data.length > 0) {
+        setCars(res.data.slice(0, 6));
+      }
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);

@@ -52,7 +52,7 @@ export default function Login() {
       <div className="bg-[var(--color-bg-card)] border border-[var(--color-border)] rounded-3xl p-10 w-full max-w-[440px] relative z-10 shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
         <div className="flex items-center justify-center gap-2 font-outfit text-xl font-extrabold text-[var(--color-text-primary)] mb-6">
           <FaCar className="text-[var(--color-primary)]" />
-          <span>Drive<span className="text-[var(--color-primary-light)]">Fleet</span></span>
+          <span>Rent<span className="text-[var(--color-primary-light)]">Ride</span></span>
         </div>
         <h1 className="text-center text-2xl font-bold text-[var(--color-text-primary)] mb-1">Welcome Back</h1>
         <p className="text-center text-[var(--color-text-muted)] text-sm mb-8">Sign in to continue your journey</p>

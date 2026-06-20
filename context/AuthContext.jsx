@@ -7,7 +7,7 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../lib/firebase.config";
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   // Google Login
   const googleLogin = () => {
     setLoading(true);
-    return signInWithPopup(auth, googleProvider);
+    return signInWithRedirect(auth, googleProvider);
   };
 
   // Update Profile

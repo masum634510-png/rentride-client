@@ -88,7 +88,7 @@ export default function Register() {
           </div>
           <div className="form-group">
             <label className="form-label">Photo URL</label>
-            <input type="url" name="photoURL" className="form-input" placeholder="https://example.com/photo.jpg" value={form.photoURL} onChange={handleChange} />
+            <input type="text" name="photoURL" className="form-input" placeholder="https://example.com/photo.jpg (Optional)" value={form.photoURL} onChange={handleChange} />
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>

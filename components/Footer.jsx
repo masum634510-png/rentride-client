@@ -82,6 +82,11 @@ const Footer = () => {
           <p className="text-[var(--color-text-muted)] text-sm text-center md:text-left">
             © {new Date().getFullYear()} RentRide. All rights reserved.
           </p>
+          <div className="flex gap-4 text-sm text-[var(--color-text-muted)]">
+            <a href="#" className="hover:text-[var(--color-primary-light)] transition-colors">Privacy Policy</a>
+            <span>•</span>
+            <a href="#" className="hover:text-[var(--color-primary-light)] transition-colors">Terms of Service</a>
+          </div>
           <p className="text-[var(--color-text-muted)] text-sm text-center md:text-right">
             Built with ❤️ for car enthusiasts
           </p>

@@ -1,6 +1,6 @@
 # 🚗 RentRide — Premium Car Rental Platform
 
-**Live Site URL:** [https://rentride-client.vercel.app](https://rentride-client.vercel.app)
+**Live Site URL:** [https://client-ivory-xi.vercel.app](https://client-ivory-xi.vercel.app)
 
 RentRide is a full-stack car rental platform where users can explore available cars, view car details, rent vehicles, manage their bookings, and maintain their profiles. Built with Next.js, Node.js, MongoDB, and Firebase Authentication.
 

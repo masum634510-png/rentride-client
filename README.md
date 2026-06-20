@@ -42,7 +42,7 @@ RentRide is a full-stack car rental platform where users can explore available c
 
 ### Client Setup
 ```bash
-git clone https://github.com/your-username/rentride-client
+git clone https://github.com/masum634510-png/rentride-client-
 cd rentride-client
 npm install
 npm run dev
@@ -81,4 +81,4 @@ rentride-client/
 
 ## 🔗 Related Repository
 
-- **Server Side:** [rentride-server](https://github.com/your-username/rentride-server)
+- **Server Side:** [rentride-server](https://github.com/masum634510-png/rentride-server)

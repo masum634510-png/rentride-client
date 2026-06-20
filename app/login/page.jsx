@@ -60,7 +60,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="form-group">
             <label className="form-label">Email Address</label>
-            <input type="email" name="email" className="form-input" placeholder="you@example.com" value={form.email} onChange={handleChange} required />
+            <input type="email" name="email" className="form-input" placeholder="you@example.com" value={form.email} onChange={handleChange} required autoFocus />
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>

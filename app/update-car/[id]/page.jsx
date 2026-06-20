@@ -81,7 +81,7 @@ export default function UpdateCar() {
               </div>
               <div className="form-group md:col-span-2">
                 <label className="form-label">Image URL *</label>
-                <input type="url" name="imageUrl" className="form-input" value={form.imageUrl} onChange={handleChange} required />
+                <input type="text" name="imageUrl" className="form-input" value={form.imageUrl} onChange={handleChange} required />
               </div>
               <div className="form-group md:col-span-2">
                 <label className="form-label">Pickup Location *</label>

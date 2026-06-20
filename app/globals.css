@@ -37,6 +37,7 @@
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--color-bg-dark); }
   ::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-primary-light); }
 }
 
 @layer components {

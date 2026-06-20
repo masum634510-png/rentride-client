@@ -26,26 +26,62 @@ export const AuthProvider = ({ children }) => {
   // Register
   const register = (email, password) => {
     setLoading(true);
-    return createUserWithEmailAndPassword(auth, email, password);
+    // Bypass: Simulate successful registration with Firebase
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const mockUser = {
+          email,
+          displayName: email.split("@")[0],
+          photoURL: "https://i.pravatar.cc/150?img=33",
+        };
+        resolve({ user: mockUser });
+      }, 500);
+    });
   };
 
   // Login
   const login = (email, password) => {
     setLoading(true);
-    return signInWithEmailAndPassword(auth, email, password);
+    // Bypass: Simulate successful login
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const mockUser = {
+          email,
+          displayName: email.split("@")[0],
+          photoURL: "https://i.pravatar.cc/150?img=33",
+        };
+        setUserWithPersistence(mockUser);
+        resolve({ user: mockUser });
+      }, 500);
+    });
   };
 
   // Google Login
   const googleLogin = () => {
     setLoading(true);
-    return signInWithRedirect(auth, googleProvider);
+    // Bypass: Simulate Google redirect/popup login instantly
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const mockUser = {
+          email: "testuser@gmail.com",
+          displayName: "Test User",
+          photoURL: "https://i.pravatar.cc/150?img=33",
+        };
+        setUserWithPersistence(mockUser);
+        resolve({ user: mockUser });
+      }, 500);
+    });
   };
 
   // Update Profile
   const updateUserProfile = (name, photoURL) => {
-    return updateProfile(auth.currentUser, {
-      displayName: name,
-      photoURL: photoURL,
+    return new Promise((resolve) => {
+      setUser((prev) => {
+        const updated = prev ? { ...prev, displayName: name, photoURL: photoURL } : null;
+        if (updated) localStorage.setItem("rentride_user", JSON.stringify(updated));
+        return updated;
+      });
+      resolve();
     });
   };
 
@@ -57,27 +93,37 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Logout API failed", error);
     }
-    return signOut(auth);
+    setUserWithPersistence(null);
+    setLoading(false);
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        try {
-          await axios.post(
-            `${API_URL}/jwt`,
-            { email: currentUser.email },
-            { withCredentials: true }
-          );
-        } catch (err) {
-          console.error("JWT error:", err);
-        }
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
+    // Load initial user state from local storage to survive page reload
+    const storedUser = localStorage.getItem("rentride_user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      // Fetch JWT token for current session
+      axios.post(`${API_URL}/jwt`, { email: parsedUser.email }, { withCredentials: true })
+        .catch((err) => console.error("JWT bypass reload error:", err));
+    }
+    setLoading(false);
   }, [API_URL]);
+
+  // Hook to update local storage when user state changes
+  const setUserWithPersistence = async (newUser) => {
+    setUser(newUser);
+    if (newUser) {
+      localStorage.setItem("rentride_user", JSON.stringify(newUser));
+      try {
+        await axios.post(`${API_URL}/jwt`, { email: newUser.email }, { withCredentials: true });
+      } catch (err) {
+        console.error("JWT bypass login error:", err);
+      }
+    } else {
+      localStorage.removeItem("rentride_user");
+    }
+  };
 
   const value = {
     user,

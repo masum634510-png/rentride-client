@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { FaHome } from "react-icons/fa";
 
 export default function NotFound() {
   return (
@@ -14,8 +15,8 @@ export default function NotFound() {
         <p className="text-[var(--color-text-muted)] max-w-[400px] mx-auto mb-8 text-base leading-relaxed">
           The page you're looking for has taken a wrong turn. Let's get you back on track!
         </p>
-        <Link href="/" className="btn btn-primary btn-lg inline-flex shadow-[0_10px_30px_rgba(99,102,241,0.3)]">
-          Back to Home 🏠
+        <Link href="/" className="btn btn-primary btn-lg inline-flex items-center gap-2 shadow-[0_10px_30px_rgba(99,102,241,0.3)]">
+          <FaHome /> Back to Home
         </Link>
       </div>
       

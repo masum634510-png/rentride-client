@@ -8,6 +8,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { FaCar, FaTimes, FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 import Link from "next/link";
 import { useAuth } from "../../context/AuthContext";
+import PrivateRoute from "../../components/PrivateRoute";
 
 export default function MyBookings() {
   const { user, loading: authLoading } = useAuth();

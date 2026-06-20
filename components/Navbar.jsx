@@ -123,7 +123,26 @@ const Navbar = () => {
               </Link>
              )
           })}
-          {!user && (
+          {user ? (
+            <>
+              <Link
+                href="/my-added-cars"
+                className={`block w-full px-4 py-3 rounded-lg font-medium text-sm transition-colors ${pathname === "/my-added-cars" ? "text-[var(--color-text-primary)] bg-indigo-500/10" : "text-[var(--color-text-secondary)]"}`}
+                onClick={() => setMenuOpen(false)}
+              >
+                My Added Cars
+              </Link>
+              <button
+                className="block w-full text-left px-4 py-3 rounded-lg font-medium text-sm text-[var(--color-danger)] hover:bg-red-500/10 transition-colors mt-2"
+                onClick={() => {
+                  setMenuOpen(false);
+                  handleLogout();
+                }}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
             <Link href="/login" className="btn btn-primary w-full justify-center mt-2" onClick={() => setMenuOpen(false)}>Login</Link>
           )}
         </div>

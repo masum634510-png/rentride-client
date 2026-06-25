@@ -14,7 +14,6 @@ export default function Register() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", photoURL: "", password: "" });
-  const [passErrors, setPassErrors] = useState([]);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -28,34 +27,67 @@ export default function Register() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    if (e.target.name === "password") setPassErrors(validatePassword(e.target.value));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validatePassword(form.password);
-    if (errors.length > 0) { setPassErrors(errors); return; }
+    if (errors.length > 0) {
+      errors.forEach((err) => toast.error(err));
+      return;
+    }
     setLoading(true);
     try {
+      // Step 1: Create Firebase user
       const result = await register(form.email, form.password);
+      
+      // Step 2: Update display name and photo in Firebase
       await updateUserProfile(form.name, form.photoURL);
-      await axios.post(`${API_URL}/users`, { name: form.name, email: form.email, photoURL: form.photoURL });
-      toast.success("Account created successfully!");
+      
+      // Step 3: Save user info to MongoDB
+      await axios.post(`${API_URL}/users`, {
+        name: form.name,
+        email: form.email,
+        photoURL: form.photoURL || result.user.photoURL || "",
+      });
+
+      toast.success("Account created successfully! Please login. 🎉");
       router.push("/login");
     } catch (err) {
-      toast.error(err.message.includes("email-already-in-use") ? "Email already registered!" : "Registration failed!");
+      if (err.code === "auth/email-already-in-use") {
+        toast.error("This email is already registered!");
+      } else if (err.code === "auth/invalid-email") {
+        toast.error("Invalid email address!");
+      } else if (err.code === "auth/weak-password") {
+        toast.error("Password is too weak!");
+      } else {
+        toast.error(err.message || "Registration failed! Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogle = async () => {
+    setLoading(true);
     try {
       const result = await googleLogin();
-      await axios.post(`${API_URL}/users`, { name: result.user.displayName, email: result.user.email, photoURL: result.user.photoURL });
+      await axios.post(`${API_URL}/users`, {
+        name: result.user.displayName,
+        email: result.user.email,
+        photoURL: result.user.photoURL,
+      });
       toast.success("Logged in with Google! 🚗");
       router.push("/");
-    } catch { toast.error("Google login failed!"); }
+    } catch (err) {
+      if (err.code === "auth/popup-closed-by-user") {
+        toast.error("Google login cancelled.");
+      } else {
+        toast.error("Google login failed! Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const rules = [
@@ -80,35 +112,75 @@ export default function Register() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="form-group">
             <label className="form-label">Full Name</label>
-            <input type="text" name="name" className="form-input" placeholder="Your full name" value={form.name} onChange={handleChange} required autoFocus />
+            <input
+              type="text"
+              name="name"
+              className="form-input"
+              placeholder="Your full name"
+              value={form.name}
+              onChange={handleChange}
+              required
+              autoFocus
+            />
           </div>
           <div className="form-group">
             <label className="form-label">Email Address</label>
-            <input type="email" name="email" className="form-input" placeholder="you@example.com" value={form.email} onChange={handleChange} required />
+            <input
+              type="email"
+              name="email"
+              className="form-input"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div className="form-group">
-            <label className="form-label">Photo URL</label>
-            <input type="text" name="photoURL" className="form-input" placeholder="https://example.com/photo.jpg (Optional)" value={form.photoURL} onChange={handleChange} />
+            <label className="form-label">Photo URL <span className="text-[var(--color-text-muted)] font-normal">(Optional)</span></label>
+            <input
+              type="url"
+              name="photoURL"
+              className="form-input"
+              placeholder="https://example.com/photo.jpg"
+              value={form.photoURL}
+              onChange={handleChange}
+            />
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>
             <div className="relative">
-              <input type={showPass ? "text" : "password"} name="password" className="form-input pr-12" placeholder="Create a strong password" value={form.password} onChange={handleChange} required />
-              <button type="button" className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none text-[var(--color-text-muted)] cursor-pointer text-base transition-colors hover:text-[var(--color-primary-light)]" onClick={() => setShowPass(!showPass)}>
+              <input
+                type={showPass ? "text" : "password"}
+                name="password"
+                className="form-input pr-12"
+                placeholder="Create a strong password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none text-[var(--color-text-muted)] cursor-pointer text-base transition-colors hover:text-[var(--color-primary-light)]"
+                onClick={() => setShowPass(!showPass)}
+              >
                 {showPass ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
             {form.password && (
               <div className="flex flex-col gap-1 mt-2">
                 {rules.map((r, i) => (
-                  <span key={i} className={`flex items-center gap-1.5 text-xs ${r.test ? "text-[var(--color-success)]" : "text-[var(--color-danger)]"}`}>
+                  <span key={i} className={`flex items-center gap-1.5 text-xs ${r.test ? "text-green-400" : "text-red-400"}`}>
                     {r.test ? <FaCheck /> : <FaTimes />} {r.label}
                   </span>
                 ))}
               </div>
             )}
           </div>
-          <button type="submit" className="btn btn-primary w-full justify-center mt-2" disabled={loading}>
+          <button
+            type="submit"
+            className="btn btn-primary w-full justify-center mt-2"
+            disabled={loading}
+          >
             {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
@@ -116,8 +188,21 @@ export default function Register() {
         <div className="text-center relative my-6 before:content-[''] before:absolute before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[var(--color-border)]">
           <span className="relative bg-[var(--color-bg-card)] px-4 text-[var(--color-text-muted)] text-xs">or continue with</span>
         </div>
-        <button className="w-full flex items-center justify-center gap-2.5 bg-white/5 border border-[var(--color-border)] text-[var(--color-text-secondary)] p-3 rounded-lg text-sm font-medium cursor-pointer transition-colors hover:bg-white/10 hover:text-[var(--color-text-primary)]" onClick={handleGoogle}><FaGoogle /> Continue with Google</button>
-        <p className="text-center text-sm text-[var(--color-text-muted)] mt-5">Already have an account? <Link href="/login" className="text-[var(--color-primary-light)] font-semibold hover:underline">Login here</Link></p>
+
+        <button
+          className="w-full flex items-center justify-center gap-2.5 bg-white/5 border border-[var(--color-border)] text-[var(--color-text-secondary)] p-3 rounded-lg text-sm font-medium cursor-pointer transition-colors hover:bg-white/10 hover:text-[var(--color-text-primary)]"
+          onClick={handleGoogle}
+          disabled={loading}
+        >
+          <FaGoogle /> Continue with Google
+        </button>
+
+        <p className="text-center text-sm text-[var(--color-text-muted)] mt-5">
+          Already have an account?{" "}
+          <Link href="/login" className="text-[var(--color-primary-light)] font-semibold hover:underline">
+            Login here
+          </Link>
+        </p>
       </div>
     </div>
   );

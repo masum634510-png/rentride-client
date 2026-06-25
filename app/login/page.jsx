@@ -29,20 +29,44 @@ function LoginContent() {
       toast.success("Welcome back! 🚗");
       router.push(redirect);
     } catch (err) {
-      toast.error(err.message.includes("invalid") ? "Invalid email or password!" : "Login failed. Please try again.");
+      if (
+        err.code === "auth/user-not-found" ||
+        err.code === "auth/wrong-password" ||
+        err.code === "auth/invalid-credential"
+      ) {
+        toast.error("Invalid email or password!");
+      } else if (err.code === "auth/too-many-requests") {
+        toast.error("Too many attempts. Please try again later.");
+      } else {
+        toast.error(err.message || "Login failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogle = async () => {
+    setLoading(true);
     try {
       const result = await googleLogin();
-      await axios.post(`${API_URL}/users`, { name: result.user.displayName, email: result.user.email, photoURL: result.user.photoURL });
+      await axios.post(
+        `${API_URL}/users`,
+        {
+          name: result.user.displayName,
+          email: result.user.email,
+          photoURL: result.user.photoURL,
+        }
+      );
       toast.success("Logged in with Google! 🚗");
       router.push(redirect);
     } catch (err) {
-      toast.error("Google login failed!");
+      if (err.code === "auth/popup-closed-by-user") {
+        toast.error("Google login cancelled.");
+      } else {
+        toast.error("Google login failed! Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,18 +86,43 @@ function LoginContent() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="form-group">
             <label className="form-label">Email Address</label>
-            <input type="email" name="email" className="form-input" placeholder="you@example.com" value={form.email} onChange={handleChange} required autoFocus />
+            <input
+              type="email"
+              name="email"
+              className="form-input"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={handleChange}
+              required
+              autoFocus
+            />
           </div>
           <div className="form-group">
             <label className="form-label">Password</label>
             <div className="relative">
-              <input type={showPass ? "text" : "password"} name="password" className="form-input pr-12" placeholder="Enter your password" value={form.password} onChange={handleChange} required />
-              <button type="button" className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none text-[var(--color-text-muted)] cursor-pointer text-base transition-colors hover:text-[var(--color-primary-light)]" onClick={() => setShowPass(!showPass)}>
+              <input
+                type={showPass ? "text" : "password"}
+                name="password"
+                className="form-input pr-12"
+                placeholder="Enter your password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none text-[var(--color-text-muted)] cursor-pointer text-base transition-colors hover:text-[var(--color-primary-light)]"
+                onClick={() => setShowPass(!showPass)}
+              >
                 {showPass ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
           </div>
-          <button type="submit" className="btn btn-primary w-full justify-center mt-2" disabled={loading}>
+          <button
+            type="submit"
+            className="btn btn-primary w-full justify-center mt-2"
+            disabled={loading}
+          >
             {loading ? "Signing in..." : "Login"}
           </button>
         </form>
@@ -82,12 +131,19 @@ function LoginContent() {
           <span className="relative bg-[var(--color-bg-card)] px-4 text-[var(--color-text-muted)] text-xs">or continue with</span>
         </div>
 
-        <button className="w-full flex items-center justify-center gap-2.5 bg-white/5 border border-[var(--color-border)] text-[var(--color-text-secondary)] p-3 rounded-lg text-sm font-medium cursor-pointer transition-colors hover:bg-white/10 hover:text-[var(--color-text-primary)]" onClick={handleGoogle}>
+        <button
+          className="w-full flex items-center justify-center gap-2.5 bg-white/5 border border-[var(--color-border)] text-[var(--color-text-secondary)] p-3 rounded-lg text-sm font-medium cursor-pointer transition-colors hover:bg-white/10 hover:text-[var(--color-text-primary)]"
+          onClick={handleGoogle}
+          disabled={loading}
+        >
           <FaGoogle /> Continue with Google
         </button>
 
         <p className="text-center text-sm text-[var(--color-text-muted)] mt-5">
-          Don't have an account? <Link href="/register" className="text-[var(--color-primary-light)] font-semibold hover:underline">Register here</Link>
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="text-[var(--color-primary-light)] font-semibold hover:underline">
+            Register here
+          </Link>
         </p>
       </div>
     </div>
